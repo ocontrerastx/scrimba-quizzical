@@ -2,14 +2,20 @@
   --font-primary-color: #293264;
   --btn-primary-color: #4d5b9e;
   --btn-font-primary-color: #f5f7fb;
+  --bg-color: #f5f7fb;
+  --border-radius: 16px;
+  --spacing-sm: 1em;
+  --spacing-md: 1.75em;
+  --spacing-lg: 2rem;
 }
 
 body {
   position: relative;
+  margin: 0 auto;
   max-width: 1280px;
-  padding: 2rem;
+  padding: var(--spacing-lg);
   font-family: "Karla", sans-serif;
-  background-color: #f5f7fb;
+  background-color: var(--bg-color);
   min-height: 100vh;
 }
 
@@ -17,7 +23,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 2rem);
+  height: calc(100vh - 2 * var(--spacing-lg));
 }
 
 h1 {
@@ -26,7 +32,7 @@ h1 {
 
 button {
   border: none;
-  border-radius: 16px;
+  border-radius: var(--border-radius);
   cursor: pointer;
 }
 
@@ -35,32 +41,34 @@ button.primary {
   color: var(--btn-font-primary-color);
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 281px;
-  width: 316px;
-  background-image: url(../src/assets/blob_yellow.png);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: top right;
-  z-index: -1;
-}
-
+/* Decorative blobs - shared styles */
+body::before,
 body::after {
   content: "";
   position: fixed;
-  bottom: 0;
-  left: 0;
-  height: 236px;
-  width: 296px;
-  background-image: url(../src/assets/blob_blue.png);
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: bottom left;
   z-index: -1;
+}
+
+/* Yellow blob - top right */
+body::before {
+  top: 0;
+  right: 0;
+  width: 316px;
+  height: 281px;
+  background-image: url(../src/assets/blob_yellow.png);
+  background-position: top right;
+}
+
+/* Blue blob - bottom left */
+body::after {
+  bottom: 0;
+  left: 0;
+  width: 296px;
+  height: 236px;
+  background-image: url(../src/assets/blob_blue.png);
+  background-position: bottom left;
 }
 
 #start button.primary {
