@@ -65,7 +65,7 @@ function App() {
           key={answerIndex}
           className={isSelected ? "quiz-answer-selected" : ""}
         >
-          {decode(answer)}
+          {answer}
         </p>
       );
     });
