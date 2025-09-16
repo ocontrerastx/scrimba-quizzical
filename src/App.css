@@ -113,13 +113,38 @@ body::after {
   font-weight: 500;
 }
 
-p.quiz-answer-selected {
+.quiz-answers p.not-selected {
+  opacity: 0.5;
+}
+
+p.selected {
   background-color: #d6dbf5;
   border: 1px solid #d6dbf5;
 }
 
-#quiz-container button {
+p.selected.correct {
+  background-color: #94d7a2;
+  border: 1px solid #94d7a2;
+}
+
+p.selected.wrong {
+  opacity: 0.5;
+  background-color: #f8bcbc;
+  border: 1px solid #f8bcbc;
+}
+
+.check-answers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
+
+.check-answers p {
+  font-weight: 700;
+}
+
+.check-answers button {
   width: fit-content;
-  align-self: center;
   padding: 10px 20px;
 }

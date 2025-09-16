@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { decode } from "html-entities";
+import { clsx } from "clsx";
 import "./App.css";
 
 function App() {
   const [isQuizInProgress, setIsQuizInProgress] = useState(false);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [processedQuestions, setProcessedQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [gradingQuiz, setGradingQuiz] = useState(false);
+  const [score, setScore] = useState(0);
 
   useEffect(() => {
+    if (processedQuestions.length > 0) return;
+
     async function fetchAndProcessData() {
       try {
-        setLoading(true);
-        setError(false);
-
         const apiResponse = await fetch("https://opentdb.com/api.php?amount=5");
         if (!apiResponse.ok) throw new Error("API call failed");
         let data = await apiResponse.json();
@@ -38,15 +38,12 @@ function App() {
 
         setProcessedQuestions(processed);
       } catch (err) {
-        setError(err.message);
         console.error("Failed to fetch quiz data:", err);
-      } finally {
-        setLoading(false);
       }
     }
 
     fetchAndProcessData();
-  }, []);
+  }, [processedQuestions.length]);
 
   function selectAnswer(questionIndex, answerIndex) {
     setSelectedAnswers((prevAnswers) => ({
@@ -58,12 +55,18 @@ function App() {
   const questionElements = processedQuestions.map((item, questionIndex) => {
     const answerElements = item.answers.map((answer, answerIndex) => {
       const isSelected = selectedAnswers[questionIndex] === answerIndex;
-
+      const isCorrect = isSelected && answerIndex === item.correctIndex;
+      const isWrong = isSelected && !(answerIndex === item.correctIndex);
       return (
         <p
           onClick={() => selectAnswer(questionIndex, answerIndex)}
           key={answerIndex}
-          className={isSelected ? "quiz-answer-selected" : ""}
+          className={clsx({
+            selected: isSelected,
+            correct: gradingQuiz && isCorrect,
+            wrong: gradingQuiz && isWrong,
+            "not-selected": gradingQuiz && !isSelected,
+          })}
         >
           {answer}
         </p>
@@ -82,6 +85,30 @@ function App() {
     setIsQuizInProgress((prevQuizProgress) => !prevQuizProgress);
   }
 
+  function gradeQuiz() {
+    setGradingQuiz(true);
+
+    const results = Object.entries(selectedAnswers).map(
+      ([questionIndex, answerIndex]) => {
+        const question = processedQuestions[questionIndex];
+        const selectedAnswer = question.answers[answerIndex];
+        const isCorrect = selectedAnswer === question.correct_answer;
+
+        return isCorrect;
+      }
+    );
+
+    const finalScore = results.filter(Boolean).length;
+    setScore(finalScore);
+  }
+
+  function startNewQuiz() {
+    setProcessedQuestions([]);
+    setSelectedAnswers({});
+    setGradingQuiz(false);
+    setScore(0);
+  }
+
   return (
     <>
       {!isQuizInProgress && (
@@ -96,7 +123,21 @@ function App() {
       {isQuizInProgress && (
         <div id="quiz-container">
           {questionElements}
-          <button className="primary">Check Answers</button>
+          <div className="check-answers">
+            <p>
+              {gradingQuiz &&
+                `You scored ${score}/${processedQuestions.length} correct answers`}
+            </p>
+            {gradingQuiz ? (
+              <button onClick={startNewQuiz} className="primary">
+                Play Again
+              </button>
+            ) : (
+              <button onClick={gradeQuiz} className="primary">
+                Check Answers
+              </button>
+            )}
+          </div>
         </div>
       )}
     </>
