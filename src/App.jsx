@@ -52,6 +52,34 @@ function App() {
     }));
   }
 
+  function startQuiz() {
+    setIsQuizInProgress((prevQuizProgress) => !prevQuizProgress);
+  }
+
+  function gradeQuiz() {
+    setGradingQuiz(true);
+
+    const results = Object.entries(selectedAnswers).map(
+      ([questionIndex, answerIndex]) => {
+        const question = processedQuestions[questionIndex];
+        const selectedAnswer = question.answers[answerIndex];
+        const isCorrect = selectedAnswer === question.correct_answer;
+
+        return isCorrect;
+      }
+    );
+
+    const finalScore = results.filter(Boolean).length;
+    setScore(finalScore);
+  }
+
+  function startNewQuiz() {
+    setProcessedQuestions([]);
+    setSelectedAnswers({});
+    setGradingQuiz(false);
+    setScore(0);
+  }
+
   const questionElements = processedQuestions.map((item, questionIndex) => {
     const answerElements = item.answers.map((answer, answerIndex) => {
       const isSelected = selectedAnswers[questionIndex] === answerIndex;
@@ -80,34 +108,6 @@ function App() {
       </div>
     );
   });
-
-  function startQuiz() {
-    setIsQuizInProgress((prevQuizProgress) => !prevQuizProgress);
-  }
-
-  function gradeQuiz() {
-    setGradingQuiz(true);
-
-    const results = Object.entries(selectedAnswers).map(
-      ([questionIndex, answerIndex]) => {
-        const question = processedQuestions[questionIndex];
-        const selectedAnswer = question.answers[answerIndex];
-        const isCorrect = selectedAnswer === question.correct_answer;
-
-        return isCorrect;
-      }
-    );
-
-    const finalScore = results.filter(Boolean).length;
-    setScore(finalScore);
-  }
-
-  function startNewQuiz() {
-    setProcessedQuestions([]);
-    setSelectedAnswers({});
-    setGradingQuiz(false);
-    setScore(0);
-  }
 
   return (
     <>
